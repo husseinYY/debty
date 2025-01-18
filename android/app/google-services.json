@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "150777051029",
+    "project_id": "debty-c8d20",
+    "storage_bucket": "debty-c8d20.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150777051029:android:766e2086d6d8c7b6c8689c",
+        "android_client_info": {
+          "package_name": "io.usetit.debty"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuriwphZMaf-YORTAMNOSrs9x7pDOXwe4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
