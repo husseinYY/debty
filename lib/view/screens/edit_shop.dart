@@ -1,100 +1,56 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../model/shop.dart';
 
-class AddShop extends StatefulWidget {
-  const AddShop({super.key});
+class EditShop extends StatefulWidget {
+  final Shop shop;
+
+  const EditShop({super.key, required this.shop});
 
   @override
-  State<AddShop> createState() => _AddShopState();
+  State<EditShop> createState() => _EditShopState();
 }
 
-class _AddShopState extends State<AddShop> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-
+class _EditShopState extends State<EditShop> {
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _addressController;
+  late TextEditingController _typeController;
 
-  // List of predefined shop types
-  final List<String> shopTypes = [
-    'Grocery',
-    'Clothing',
-    'Electronics',
-    'Furniture',
-    'Bookstore',
-    'Sports Equipment',
-    'Pharmacy',
-    'Restaurant',
-    'Bakery',
-    'Cosmetics',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.shop.name);
+    _addressController = TextEditingController(text: widget.shop.address);
+    _typeController = TextEditingController(text: widget.shop.type);
+  }
 
-  String? _selectedShopType;
-
-  Future<void> _addShop() async {
-    if (_formKey.currentState!.validate() && _selectedShopType != null) {
-      String shopName = _nameController.text;
-      String shopAddress = _addressController.text;
-      String shopType = _selectedShopType!;
-
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-
-      // Create a new shop document under the user's collection
-      var shopRef = await _firestore
-          .collection('users') // Users collection
-          .doc(userId) // Current user
-          .collection('shops') // Shops subcollection under user
-          .add({
-        'name': shopName,
-        'address': shopAddress,
-        'type': shopType,
-      });
-
-      // Create the "Uncategorized" category for this shop
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('shops')
-          .doc(shopRef.id)
-          .collection('categories')
-          .add({
-        'name': 'Uncategorized',
-        'shopId': shopRef.id,
-      });
-
-      Phoenix.rebirth(context);
-    } else {
-      // Handle case where shop type is not selected
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a shop type')),
-      );
-    }
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _addressController.dispose();
+    _typeController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1D1B42), // Background color
+      backgroundColor: const Color(0xFF1D1B42),
       appBar: AppBar(
         title: Text(
-          'Add New Shop',
+          'Edit Shop',
           style: GoogleFonts.poppins(color: Colors.white),
         ),
-        backgroundColor: const Color(0xFF29236A), // AppBar background color
-        iconTheme:
-            const IconThemeData(color: Colors.white), // Back button color
+        backgroundColor: const Color(0xFF29236A),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              // Shop Name Field
               TextFormField(
                 controller: _nameController,
                 style: GoogleFonts.poppins(color: Colors.white),
@@ -112,14 +68,12 @@ class _AddShopState extends State<AddShop> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the shop name';
+                    return 'Please enter a shop name';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-
-              // Shop Address Field
               TextFormField(
                 controller: _addressController,
                 style: GoogleFonts.poppins(color: Colors.white),
@@ -137,22 +91,14 @@ class _AddShopState extends State<AddShop> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the shop address';
+                    return 'Please enter a shop address';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-
-              // Shop Type Dropdown
-              DropdownButtonFormField<String>(
-                value: _selectedShopType,
-                hint: Text(
-                  'Select Shop Type',
-                  style: GoogleFonts.poppins(color: Colors.white70),
-                ),
-                dropdownColor:
-                    const Color(0xFF29236A), // Dropdown background color
+              TextFormField(
+                controller: _typeController,
                 style: GoogleFonts.poppins(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Shop Type',
@@ -166,31 +112,30 @@ class _AddShopState extends State<AddShop> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                items: shopTypes.map((type) {
-                  return DropdownMenuItem<String>(
-                    value: type,
-                    child: Text(type),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedShopType = newValue;
-                  });
-                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select a shop type';
+                    return 'Please enter a shop type';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 30),
-
-              // Add Shop Button
               ElevatedButton(
-                onPressed: _addShop,
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    // Save changes and pop the screen
+                    Navigator.pop(
+                        context,
+                        Shop(
+                          id: widget.shop.id,
+                          name: _nameController.text,
+                          address: _addressController.text,
+                          type: _typeController.text,
+                        ));
+                  }
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5B3E9A), // Button color
+                  backgroundColor: const Color(0xFF5B3E9A),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
@@ -198,7 +143,7 @@ class _AddShopState extends State<AddShop> {
                   ),
                 ),
                 child: Text(
-                  'Add Shop',
+                  'Save Changes',
                   style: GoogleFonts.poppins(color: Colors.white),
                 ),
               ),

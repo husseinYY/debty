@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../view/auth/email_verification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -16,7 +17,8 @@ class SignUpState extends State<SignUp> {
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  bool obscureText = false;
+  bool obscureText = true;
+
   Future<void> signUp(BuildContext context) async {
     setState(() {
       isLoading = true;
@@ -32,6 +34,9 @@ class SignUpState extends State<SignUp> {
         email: emailController.text,
         password: passwordController.text,
       );
+
+      // Update the user's profile with the display name
+      await userCredential.user!.updateDisplayName(nameController.text);
 
       // Save user details to Firestore
       final user = {
@@ -97,6 +102,7 @@ class SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF1D1B42), // Background color
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -106,18 +112,22 @@ class SignUpState extends State<SignUp> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 50),
-                  const Text(
+                  Text(
                     "Create Account",
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     "Sign up to start managing your finances",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: Colors.white70,
+                    ),
                   ),
                   const SizedBox(height: 30),
                   Form(
@@ -126,9 +136,18 @@ class SignUpState extends State<SignUp> {
                       children: [
                         TextFormField(
                           controller: nameController,
+                          style: GoogleFonts.poppins(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: 'Enter your full name',
-                            border: OutlineInputBorder(
+                            labelStyle:
+                                GoogleFonts.poppins(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.white70),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
@@ -136,9 +155,18 @@ class SignUpState extends State<SignUp> {
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: emailController,
+                          style: GoogleFonts.poppins(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: 'Enter your Email',
-                            border: OutlineInputBorder(
+                            labelStyle:
+                                GoogleFonts.poppins(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.white70),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
@@ -148,35 +176,57 @@ class SignUpState extends State<SignUp> {
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: passwordController,
-                          obscureText: true,
+                          obscureText: obscureText,
+                          style: GoogleFonts.poppins(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: 'Enter your Password',
-                            border: OutlineInputBorder(
+                            labelStyle:
+                                GoogleFonts.poppins(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.white70),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
                               borderRadius: BorderRadius.circular(15),
                             ),
                             suffixIcon: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    obscureText = !obscureText;
-                                  });
-                                },
-                                child: obscureText
-                                    ? const Icon(Icons.visibility)
-                                    : const Icon(Icons.visibility_off)),
+                              onTap: () {
+                                setState(() {
+                                  obscureText = !obscureText;
+                                });
+                              },
+                              child: obscureText
+                                  ? const Icon(Icons.visibility,
+                                      color: Colors.white70)
+                                  : const Icon(Icons.visibility_off,
+                                      color: Colors.white70),
+                            ),
                           ),
                           validator: passwordValidator,
                         ),
                         const SizedBox(height: 20),
                         isLoading
-                            ? const CircularProgressIndicator()
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
                             : ElevatedButton(
                                 onPressed: () => signUp(context),
                                 style: ElevatedButton.styleFrom(
-                                    minimumSize:
-                                        const Size(double.infinity, 50),
-                                    backgroundColor: Colors.blue,
-                                    foregroundColor: Colors.white),
-                                child: const Text('Sign Up'),
+                                  minimumSize: const Size(double.infinity, 50),
+                                  backgroundColor: const Color(0xFF5B3E9A),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Sign Up',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                       ],
                     ),
@@ -184,12 +234,19 @@ class SignUpState extends State<SignUp> {
                   const SizedBox(height: 7),
                   TextButton(
                     style: ButtonStyle(
-                        foregroundColor:
-                            WidgetStateProperty.all<Color>(Colors.blue)),
+                      foregroundColor:
+                          WidgetStateProperty.all<Color>(Colors.white),
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('Already have an account? Log In'),
+                    child: Text(
+                      'Already have an account? Log In',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
                 ],
               ),

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../model/customer.dart';
 import '../../model/product.dart';
 import '../../model/debt.dart';
-
 import '../../model/category.dart';
 import '../../model/shop.dart';
+import '../../model/transaction.dart';
 
 class POS extends StatefulWidget {
   final Shop shop;
@@ -94,6 +96,29 @@ class POSState extends State<POS> {
     });
   }
 
+  Future<void> _addTransaction() async {
+    final transactionRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('shops')
+        .doc(widget.shop.id)
+        .collection('transactions')
+        .doc();
+
+    final transaction = TransactionModel(
+      id: transactionRef.id,
+      shopId: widget.shop.id,
+      customer: selectedCustomer!,
+      products: cart.keys.toList(), // List of Product objects
+      totalPrice: totalPrice,
+      amountPaid: amountPaid,
+      amountDue: totalPrice - amountPaid,
+      timestamp: DateTime.now(),
+    );
+
+    await transactionRef.set(transaction.toJson());
+  }
+
   Future<void> _addDebt() async {
     final debtQuery = await _firestore
         .collection('users')
@@ -132,7 +157,9 @@ class POSState extends State<POS> {
     }
   }
 
-  void _handlePayment() {
+  void _handlePayment() async {
+    await _addTransaction();
+
     if (amountPaid > totalPrice) {
       final change = amountPaid - totalPrice;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -149,15 +176,22 @@ class POSState extends State<POS> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Debt created!')),
       );
-      Navigator.pop(context);
+      Phoenix.rebirth(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF1D1B42), // Background color
       appBar: AppBar(
-        title: const Text('POS - Purchase'),
+        title: Text(
+          'POS - Purchase',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF29236A), // AppBar background color
+        iconTheme:
+            const IconThemeData(color: Colors.white), // Back button color
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
@@ -165,50 +199,65 @@ class POSState extends State<POS> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Category Dropdown
               FutureBuilder<List<Category>>(
                 future: _fetchCategories(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    );
                   }
 
                   if (snapshot.hasError || !snapshot.hasData) {
-                    return const Center(
-                        child: Text('Error fetching categories'));
+                    return Center(
+                      child: Text(
+                        'Error fetching categories',
+                        style: GoogleFonts.poppins(color: Colors.white),
+                      ),
+                    );
                   }
 
                   final categories = snapshot.data!;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Select Category',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 10),
-                      Card(
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF29236A),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         child: DropdownButton<String>(
                           isExpanded: true,
                           value: selectedCategory,
-                          hint: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Choose a category',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blueAccent)),
+                          hint: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Choose a category',
+                              style: GoogleFonts.poppins(color: Colors.white70),
+                            ),
                           ),
+                          dropdownColor: const Color(0xFF29236A),
+                          style: GoogleFonts.poppins(color: Colors.white),
                           items: categories
                               .map((category) => DropdownMenuItem(
                                     value: category.categoryID,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Text(category.categoryName,
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.blueAccent)),
+                                      child: Text(
+                                        category.categoryName,
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white),
+                                      ),
                                     ),
                                   ))
                               .toList(),
@@ -225,21 +274,32 @@ class POSState extends State<POS> {
                 },
               ),
               const SizedBox(height: 20),
+
+              // Product Dropdown
               if (availableProducts.isNotEmpty) ...[
-                const Text(
+                Text(
                   'Select Product',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 10),
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF29236A),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: DropdownButton<Product>(
                     isExpanded: true,
                     value: selectedProduct,
-                    hint: const Text('Choose a product',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueAccent)),
+                    hint: Text(
+                      'Choose a product',
+                      style: GoogleFonts.poppins(color: Colors.white70),
+                    ),
+                    dropdownColor: const Color(0xFF29236A),
+                    style: GoogleFonts.poppins(color: Colors.white),
                     items: availableProducts
                         .map((product) => DropdownMenuItem(
                               value: product,
@@ -249,14 +309,14 @@ class POSState extends State<POS> {
                                   children: [
                                     const Icon(
                                       Icons.store,
-                                      color: Colors.pink,
+                                      color: Colors.white,
                                     ),
                                     const SizedBox(width: 10),
-                                    Text(product.name,
-                                        style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blueAccent)),
+                                    Text(
+                                      product.name,
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -278,96 +338,153 @@ class POSState extends State<POS> {
                           controller:
                               TextEditingController(text: quantity.toString()),
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
+                          style: GoogleFonts.poppins(color: Colors.white),
+                          decoration: InputDecoration(
                             labelText: 'Quantity',
-                            border: OutlineInputBorder(),
+                            labelStyle:
+                                GoogleFonts.poppins(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.white70),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                           onChanged: (value) {
-                            quantity = int.tryParse(value) ??
-                                1; // Update quantity on input change
+                            quantity = int.tryParse(value) ?? 1;
                           },
                           onSubmitted: (value) {
-                            _addToCart(selectedProduct!,
-                                quantity); // Use updated quantity
+                            _addToCart(selectedProduct!, quantity);
                           },
                         ),
                       ),
                       const SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: () {
-                          _addToCart(selectedProduct!,
-                              quantity); // Use the same quantity variable
+                          _addToCart(selectedProduct!, quantity);
                         },
-                        child: const Text('Add to Cart'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF5B3E9A),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          'Add to Cart',
+                          style: GoogleFonts.poppins(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
                 ],
               ],
               const SizedBox(height: 20),
-              const Text(
+
+              // Cart Section
+              Text(
                 'Cart',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               if (cart.isNotEmpty) ...[
                 ...cart.entries.map((entry) => ListTile(
-                      title: Text('${entry.key.name} x${entry.value}'),
+                      title: Text(
+                        '${entry.key.name} x${entry.value}',
+                        style: GoogleFonts.poppins(color: Colors.white),
+                      ),
                       subtitle: Text(
-                          '\$${(entry.key.price * entry.value).toStringAsFixed(2)}'),
+                        '\$${(entry.key.price * entry.value).toStringAsFixed(2)}',
+                        style: GoogleFonts.poppins(color: Colors.white70),
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.close, color: Colors.red),
                         onPressed: () => _removeFromCart(entry.key),
                       ),
                     )),
                 Text(
-                  'Total Price: \$${totalPrice.toString()}',
-                  style: TextStyle(
+                  'Total Price: \$${totalPrice.toStringAsFixed(2)}',
+                  style: GoogleFonts.poppins(
+                    color: Colors.green[800],
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green[800],
                   ),
                 ),
               ],
               const SizedBox(height: 20),
+
+              // Customer Dropdown
               FutureBuilder<List<Customer>>(
                 future: _fetchCustomers(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    );
                   }
 
                   if (snapshot.hasError || !snapshot.hasData) {
-                    return const Center(
-                        child: Text('Error fetching customers'));
+                    return Center(
+                      child: Text(
+                        'Error fetching customers',
+                        style: GoogleFonts.poppins(color: Colors.white),
+                      ),
+                    );
                   }
 
                   final customers = snapshot.data!;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Select Customer',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 10),
-                      Card(
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF29236A),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         child: DropdownButton<Customer>(
                           isExpanded: true,
                           value: selectedCustomer,
-                          hint: const Text('Choose a customer'),
+                          hint: Text(
+                            'Choose a customer',
+                            style: GoogleFonts.poppins(color: Colors.white70),
+                          ),
+                          dropdownColor: const Color(0xFF29236A),
+                          style: GoogleFonts.poppins(color: Colors.white),
                           items: customers
                               .map((customer) => DropdownMenuItem(
                                     value: customer,
-                                    child: Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.supervised_user_circle,
-                                          color: Colors.pink,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(customer.name),
-                                      ],
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.person,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            customer.name,
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ))
                               .toList(),
@@ -383,44 +500,69 @@ class POSState extends State<POS> {
                 },
               ),
               const SizedBox(height: 20),
+
+              // Amount Paid Field
               TextField(
                 keyboardType: TextInputType.number,
+                style: GoogleFonts.poppins(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Amount Paid',
+                  labelStyle: GoogleFonts.poppins(color: Colors.white70),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.white70),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.white),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 onChanged: (value) {
                   setState(() {
                     amountPaid = double.tryParse(value) ?? 0.0;
                   });
                 },
-                decoration: const InputDecoration(
-                  labelText: 'Amount Paid',
-                  border: OutlineInputBorder(),
-                ),
               ),
               const SizedBox(height: 20),
+
+              // Buttons
               Row(
                 children: [
                   ElevatedButton.icon(
                     onPressed: cart.isEmpty || selectedCustomer == null
                         ? null
-                        : _handlePayment, // Disable if cart is empty
-                    icon: const Icon(Icons.check_circle_outline),
-                    label: const Text('Complete Payment'),
+                        : _handlePayment,
+                    icon: const Icon(Icons.check_circle_outline,
+                        color: Colors.white),
+                    label: Text(
+                      'Complete Payment',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF5B3E9A),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      textStyle: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                          horizontal: 20, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
                   const Spacer(),
                   ElevatedButton.icon(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.cancel_outlined),
-                    label: const Text('Cancel'),
+                    icon:
+                        const Icon(Icons.cancel_outlined, color: Colors.white),
+                    label: Text(
+                      'Cancel',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF5B3E9A),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      textStyle: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                          horizontal: 20, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
                 ],

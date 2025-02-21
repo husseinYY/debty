@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../../model/category.dart';
 import '../../model/product.dart';
 import '../../model/shop.dart';
@@ -56,54 +56,135 @@ class AddProductState extends State<AddProduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF1D1B42), // Background color
       appBar: AppBar(
-        title: const Text('Add Product'),
+        title: Text(
+          'Add Product',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF29236A), // AppBar background color
+        iconTheme:
+            const IconThemeData(color: Colors.white), // Back button color
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Product Name Field
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Product Name'),
+              style: GoogleFonts.poppins(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Product Name',
+                labelStyle: GoogleFonts.poppins(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white70),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
             ),
+            const SizedBox(height: 20),
+
+            // Price Field
             TextField(
               controller: _priceController,
-              decoration: const InputDecoration(labelText: 'Price'),
+              style: GoogleFonts.poppins(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Price',
+                labelStyle: GoogleFonts.poppins(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white70),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               keyboardType: TextInputType.number,
             ),
+            const SizedBox(height: 20),
+
+            // Category Dropdown
             FutureBuilder<List<Category>>(
               future: _categoriesFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  );
                 } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
+                  return Center(
+                    child: Text(
+                      'Error: ${snapshot.error}',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                  );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Text('No categories found.');
+                  return Center(
+                    child: Text(
+                      'No categories found.',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                  );
                 }
 
                 final categories = snapshot.data!;
-                return DropdownButton<String>(
-                  value: _selectedCategoryId,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedCategoryId = newValue;
-                    });
-                  },
-                  items: categories.map((Category category) {
-                    return DropdownMenuItem<String>(
-                      value: category.categoryID,
-                      child: Text(category.categoryName),
-                    );
-                  }).toList(),
+                return Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF29236A),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: DropdownButton<String>(
+                    value: _selectedCategoryId,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedCategoryId = newValue;
+                      });
+                    },
+                    dropdownColor: const Color(0xFF29236A),
+                    style: GoogleFonts.poppins(color: Colors.white),
+                    items: categories.map((Category category) {
+                      return DropdownMenuItem<String>(
+                        value: category.categoryID,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            category.categoryName,
+                            style: GoogleFonts.poppins(color: Colors.white),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    hint: Text(
+                      'Select Category',
+                      style: GoogleFonts.poppins(color: Colors.white70),
+                    ),
+                  ),
                 );
               },
             ),
             const SizedBox(height: 20),
+
+            // Add Product Button
             ElevatedButton(
               onPressed: () => _addProduct(),
-              child: const Text('Add Product'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5B3E9A), // Button color
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Add Product',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
             ),
           ],
         ),

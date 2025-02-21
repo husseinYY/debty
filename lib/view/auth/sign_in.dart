@@ -1,9 +1,8 @@
-// -***************************************** TESTED ***********************************-;
-
 import '../../view/auth/reset_password.dart';
 import '../../view/screens/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'sign_up.dart';
 
 class SignIn extends StatefulWidget {
@@ -64,6 +63,7 @@ class SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF1D1B42), // Background color
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -73,18 +73,22 @@ class SignInState extends State<SignIn> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 50),
-                  const Text(
+                  Text(
                     "Let's start!",
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     "Sign in to your account and start transforming your finances",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: Colors.white70,
+                    ),
                   ),
                   const SizedBox(height: 30),
                   Form(
@@ -93,9 +97,18 @@ class SignInState extends State<SignIn> {
                       children: [
                         TextFormField(
                           controller: email,
+                          style: GoogleFonts.poppins(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: 'Enter your Email',
-                            border: OutlineInputBorder(
+                            labelStyle:
+                                GoogleFonts.poppins(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.white70),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
@@ -106,26 +119,39 @@ class SignInState extends State<SignIn> {
                         TextFormField(
                           controller: password,
                           obscureText: obscureText,
+                          style: GoogleFonts.poppins(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: 'Enter your Password',
-                            border: OutlineInputBorder(
+                            labelStyle:
+                                GoogleFonts.poppins(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.white70),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
                               borderRadius: BorderRadius.circular(15),
                             ),
                             suffixIcon: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    obscureText = !obscureText;
-                                  });
-                                },
-                                child: obscureText
-                                    ? const Icon(Icons.visibility)
-                                    : const Icon(Icons.visibility_off)),
+                              onTap: () {
+                                setState(() {
+                                  obscureText = !obscureText;
+                                });
+                              },
+                              child: obscureText
+                                  ? const Icon(Icons.visibility,
+                                      color: Colors.white70)
+                                  : const Icon(Icons.visibility_off,
+                                      color: Colors.white70),
+                            ),
                           ),
                           validator: passwordValidator,
                         ),
                         const SizedBox(height: 20),
                         isLoading
-                            ? const CircularProgressIndicator()
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
                             : ElevatedButton(
                                 onPressed: () async {
                                   if (formKey.currentState?.validate() ??
@@ -172,10 +198,19 @@ class SignInState extends State<SignIn> {
                                 },
                                 style: ElevatedButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 50),
-                                  backgroundColor: Colors.blue,
+                                  backgroundColor: const Color(0xFF5B3E9A),
                                   foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
                                 ),
-                                child: const Text('Log In'),
+                                child: Text(
+                                  'Log In',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                       ],
                     ),
@@ -184,36 +219,55 @@ class SignInState extends State<SignIn> {
                   if (errorMessage.isNotEmpty)
                     Text(
                       errorMessage,
-                      style: const TextStyle(color: Colors.red),
+                      style: GoogleFonts.poppins(color: Colors.red),
                     ),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
                         style: ButtonStyle(
-                            foregroundColor:
-                                WidgetStateProperty.all<Color>(Colors.blue)),
+                          foregroundColor:
+                              WidgetStateProperty.all<Color>(Colors.white),
+                        ),
                         onPressed: () {
                           // Push to sign up page
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SignUp()));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignUp(),
+                            ),
+                          );
                         },
-                        child: const Text('Sign Up'),
+                        child: Text(
+                          'Sign Up',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
                       TextButton(
                         style: ButtonStyle(
-                            foregroundColor:
-                                WidgetStateProperty.all<Color>(Colors.blue)),
+                          foregroundColor:
+                              WidgetStateProperty.all<Color>(Colors.white),
+                        ),
                         onPressed: () {
                           // Push to reset password page
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const ResetPassword()));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ResetPassword(),
+                            ),
+                          );
                         },
-                        child: const Text('Forgot password?'),
+                        child: Text(
+                          'Forgot password?',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -226,5 +280,3 @@ class SignInState extends State<SignIn> {
     );
   }
 }
-
-// -***************************************** TESTED ***********************************-;

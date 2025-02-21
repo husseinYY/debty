@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../../model/product.dart';
 import '../../model/shop.dart';
 import 'add_product.dart';
@@ -74,18 +74,37 @@ class ProductsState extends State<Products> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF1D1B42), // Background color
       appBar: AppBar(
-        title: const Text('All Products'),
+        title: Text(
+          'All Products',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF29236A), // AppBar background color
+        iconTheme:
+            const IconThemeData(color: Colors.white), // Back button color
       ),
       body: FutureBuilder<List<Product>>(
         future: _productsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+            );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No products found.'));
+            return Center(
+              child: Text(
+                'No products found.',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+            );
           }
 
           final products = snapshot.data!;
@@ -97,11 +116,29 @@ class ProductsState extends State<Products> {
                 onLongPress: () =>
                     _showDeleteConfirmationDialog(context, product),
                 child: Card(
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 8, horizontal: 16), // Card margin
+                  color: const Color(0xFF29236A), // Card background color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: ListTile(
-                    leading: const Icon(Icons.shopping_bag),
-                    title: Text(product.name),
-                    subtitle:
-                        Text('Price: \$${product.price.toStringAsFixed(2)}'),
+                    leading: const Icon(
+                      Icons.shopping_bag,
+                      color: Colors.white,
+                    ),
+                    title: Text(
+                      product.name,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Price: \$${product.price.toStringAsFixed(2)}',
+                      style: GoogleFonts.poppins(color: Colors.white70),
+                    ),
                   ),
                 ),
               );
@@ -112,14 +149,20 @@ class ProductsState extends State<Products> {
       // FAB to add a new product to the current category
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AddProduct(
-                      shop: widget.shop,
-                      onProductAdded: _refreshProducts,
-                    ))),
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddProduct(
+              shop: widget.shop,
+              onProductAdded: _refreshProducts,
+            ),
+          ),
+        ),
         tooltip: 'Add Product',
-        child: const Icon(Icons.add),
+        backgroundColor: const Color(0xFF5B3E9A), // FAB background color
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -154,19 +197,32 @@ class ProductsState extends State<Products> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Product'),
-        content: const Text('Are you sure you want to delete this product?'),
+        backgroundColor: const Color(0xFF29236A), // Dialog background color
+        title: Text(
+          'Delete Product',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete this product?',
+          style: GoogleFonts.poppins(color: Colors.white70),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () {
               _deleteProduct(product);
               Navigator.of(context).pop();
             },
-            child: const Text('Delete'),
+            child: Text(
+              'Delete',
+              style: GoogleFonts.poppins(color: Colors.red),
+            ),
           ),
         ],
       ),

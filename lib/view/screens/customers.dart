@@ -2,7 +2,7 @@ import '../../model/shop.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../../model/customer.dart'; // Assuming this model is the one you provided
 
 class Customers extends StatefulWidget {
@@ -91,17 +91,46 @@ class CustomersState extends State<Customers> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add Customer'),
+        backgroundColor: const Color(0xFF29236A), // Dialog background color
+        title: Text(
+          'Add Customer',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: customerNameController,
-              decoration: const InputDecoration(labelText: 'Customer Name'),
+              style: GoogleFonts.poppins(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Customer Name',
+                labelStyle: GoogleFonts.poppins(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white70),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
             ),
+            const SizedBox(height: 20),
             TextField(
               controller: customerPhoneController,
-              decoration: const InputDecoration(labelText: 'Phone Number'),
+              style: GoogleFonts.poppins(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Phone Number',
+                labelStyle: GoogleFonts.poppins(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white70),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               keyboardType: TextInputType.phone,
             ),
           ],
@@ -109,7 +138,10 @@ class CustomersState extends State<Customers> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -118,7 +150,10 @@ class CustomersState extends State<Customers> {
               await _addCustomer(customerName, customerPhone);
               Navigator.of(context).pop();
             },
-            child: const Text('Add'),
+            child: Text(
+              'Add',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -161,16 +196,37 @@ class CustomersState extends State<Customers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Customers')),
+      backgroundColor: const Color(0xFF1D1B42), // Background color
+      appBar: AppBar(
+        title: Text(
+          'Customers',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF29236A), // AppBar background color
+        iconTheme:
+            const IconThemeData(color: Colors.white), // Back button color
+      ),
       body: FutureBuilder<List<Customer>>(
         future: _customersFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+            );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No customers found.'));
+            return Center(
+              child: Text(
+                'No customers found.',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+            );
           } else {
             final customers = snapshot.data!;
             return ListView.builder(
@@ -180,10 +236,29 @@ class CustomersState extends State<Customers> {
                 return GestureDetector(
                   onLongPress: () => _showDeleteConfirmationDialog(customer.id),
                   child: Card(
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8, horizontal: 16), // Card margin
+                    color: const Color(0xFF29236A), // Card background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: ListTile(
-                      leading: const Icon(Icons.person), // User icon
-                      title: Text(customer.name),
-                      subtitle: Text('Phone: ${customer.phone}'),
+                      leading: const Icon(
+                        Icons.person,
+                        color: Colors.white,
+                      ),
+                      title: Text(
+                        customer.name,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Phone: ${customer.phone}',
+                        style: GoogleFonts.poppins(color: Colors.white70),
+                      ),
                     ),
                   ),
                 );
@@ -195,6 +270,7 @@ class CustomersState extends State<Customers> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddCustomerDialog(),
         tooltip: 'Add Customer',
+        backgroundColor: const Color(0xFF5B3E9A), // FAB background color
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -207,19 +283,32 @@ class CustomersState extends State<Customers> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Customer'),
-        content: const Text('Are you sure you want to delete this customer?'),
+        backgroundColor: const Color(0xFF29236A), // Dialog background color
+        title: Text(
+          'Delete Customer',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete this customer?',
+          style: GoogleFonts.poppins(color: Colors.white70),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () async {
               await _deleteCustomer(customerId);
               Navigator.of(context).pop();
             },
-            child: const Text('Delete'),
+            child: Text(
+              'Delete',
+              style: GoogleFonts.poppins(color: Colors.red),
+            ),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({super.key});
@@ -40,23 +41,44 @@ class ResetPasswordState extends State<ResetPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
+      backgroundColor: const Color(0xFF1D1B42), // Background color
+      appBar: AppBar(
+        title: Text(
+          'Reset Password',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF29236A), // AppBar background color
+        iconTheme:
+            const IconThemeData(color: Colors.white), // Back button color
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'Enter your email to reset your password.',
-              style: TextStyle(fontSize: 18),
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                color: Colors.white,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(
+              style: GoogleFonts.poppins(color: Colors.white),
+              decoration: InputDecoration(
                 labelText: 'Email Address',
-                border: OutlineInputBorder(),
+                labelStyle: GoogleFonts.poppins(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white70),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(15),
+                ),
               ),
               keyboardType: TextInputType.emailAddress,
             ),
@@ -65,16 +87,30 @@ class ResetPasswordState extends State<ResetPassword> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _sendResetEmail,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  backgroundColor: const Color(0xFF5B3E9A),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
                 child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('Send Reset Link'),
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                        'Send Reset Link',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 10),
             if (_message.isNotEmpty)
               Text(
                 _message,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: _message.contains('sent') ? Colors.green : Colors.red,
                   fontSize: 16,
                 ),

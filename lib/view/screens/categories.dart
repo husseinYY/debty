@@ -3,7 +3,7 @@ import '../../view/screens/category_products.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../../model/category.dart';
 
 class Categories extends StatefulWidget {
@@ -120,15 +120,34 @@ class CategoriesState extends State<Categories> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add Category'),
+        backgroundColor: const Color(0xFF29236A), // Dialog background color
+        title: Text(
+          'Add Category',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
         content: TextField(
           controller: categoryNameController,
-          decoration: const InputDecoration(labelText: 'Category Name'),
+          style: GoogleFonts.poppins(color: Colors.white),
+          decoration: InputDecoration(
+            labelText: 'Category Name',
+            labelStyle: GoogleFonts.poppins(color: Colors.white70),
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.white70),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.white),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -136,7 +155,10 @@ class CategoriesState extends State<Categories> {
               await _addCategory(categoryName);
               Navigator.of(context).pop();
             },
-            child: const Text('Add'),
+            child: Text(
+              'Add',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -196,16 +218,37 @@ class CategoriesState extends State<Categories> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Categories')),
+      backgroundColor: const Color(0xFF1D1B42), // Background color
+      appBar: AppBar(
+        title: Text(
+          'Categories',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF29236A), // AppBar background color
+        iconTheme:
+            const IconThemeData(color: Colors.white), // Back button color
+      ),
       body: FutureBuilder<List<Category>>(
         future: _categoriesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+            );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No categories found.'));
+            return Center(
+              child: Text(
+                'No categories found.',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+            );
           } else {
             final categories = snapshot.data!;
             return ListView.builder(
@@ -224,9 +267,29 @@ class CategoriesState extends State<Categories> {
                   ),
                   onLongPress: () => _showDeleteConfirmationDialog(category),
                   child: Card(
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8, horizontal: 16), // Card margin
+                    color: const Color(0xFF29236A), // Card background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: ListTile(
-                      title: Text(category.categoryName),
-                      subtitle: Text('ID: ${category.categoryID}'),
+                      title: Text(
+                        category.categoryName,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'ID: ${category.categoryID}',
+                        style: GoogleFonts.poppins(color: Colors.white70),
+                      ),
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 );
@@ -237,7 +300,11 @@ class CategoriesState extends State<Categories> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddCategoryDialog,
-        child: const Icon(Icons.add),
+        backgroundColor: const Color(0xFF5B3E9A), // FAB background color
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -246,19 +313,32 @@ class CategoriesState extends State<Categories> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Category'),
-        content: const Text('Are you sure you want to delete this category?'),
+        backgroundColor: const Color(0xFF29236A), // Dialog background color
+        title: Text(
+          'Delete Category',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete this category?',
+          style: GoogleFonts.poppins(color: Colors.white70),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () async {
               await _deleteCategory(category);
               Navigator.of(context).pop();
             },
-            child: const Text('Delete'),
+            child: Text(
+              'Delete',
+              style: GoogleFonts.poppins(color: Colors.red),
+            ),
           ),
         ],
       ),

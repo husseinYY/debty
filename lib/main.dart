@@ -2,20 +2,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+
 import 'view/auth/email_verification.dart';
 import 'view/auth/sign_in.dart';
 import 'view/screens/home.dart';
 
 import 'firebase_options.dart';
-// -***************************************** TESTED ***********************************-;
 
+// -***************************************** TESTED ***********************************-;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(Phoenix(child: const MyApp()));
 }
 // -***************************************** TESTED ***********************************-;
 

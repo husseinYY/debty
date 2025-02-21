@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../screens/home.dart';
-// -***************************************** TESTED ***********************************-;
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({super.key});
@@ -59,7 +58,16 @@ class EmailVerificationState extends State<EmailVerification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Verify Your Email')),
+      backgroundColor: const Color(0xFF1D1B42), // Background color
+      appBar: AppBar(
+        title: Text(
+          'Verify Your Email',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF29236A), // AppBar background color
+        iconTheme:
+            const IconThemeData(color: Colors.white), // Back button color
+      ),
       body: RefreshIndicator(
         onRefresh: _checkVerificationStatus,
         child: ListView(
@@ -73,23 +81,44 @@ class EmailVerificationState extends State<EmailVerification> {
                   const Icon(
                     Icons.email,
                     size: 100,
-                    color: Colors.blue,
+                    color: Colors.white,
                   ),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'Please verify your email address.',
-                    style: TextStyle(fontSize: 18),
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     'We have sent a verification email to your registered email address. Please check your inbox and click on the verification link.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.white70,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _checkVerificationStatus,
-                    child: const Text('Check Verification Status'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: const Color(0xFF5B3E9A),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: Text(
+                      'Check Verification Status',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
@@ -100,7 +129,21 @@ class EmailVerificationState extends State<EmailVerification> {
                         _emailSent = true; // Update flag if resend is manual
                       });
                     },
-                    child: const Text('Resend Verification Email'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: const Color(0xFF5B3E9A),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: Text(
+                      'Resend Verification Email',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -111,5 +154,3 @@ class EmailVerificationState extends State<EmailVerification> {
     );
   }
 }
-
-// -***************************************** TESTED ***********************************-;
